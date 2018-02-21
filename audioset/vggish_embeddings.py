@@ -36,7 +36,6 @@ class VGGishEmbedder(object):
 
 
     def convert_audio_to_embedding(self, wav_file):
-        print(f'processing {wav_file}')
         if not wav_file:
             # Write a WAV of a sine wav into an in-memory file object.
             num_secs = 5
