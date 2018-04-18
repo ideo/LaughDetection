@@ -13,7 +13,7 @@ VGG_CHECKPOINT = 'audioset/vggish_model.ckpt'
 
 class VGGishEmbedder(object):
 
-    def __init__(self,tfrecord_file=None):
+    def __init__(self, tfrecord_file=None):
         # Prepare a postprocessor to munge the model embeddings.
         self.pproc = vggish_postprocess.Postprocessor(PCA_PARAMS)
 

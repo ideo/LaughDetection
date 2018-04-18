@@ -4,7 +4,6 @@ from datetime import datetime
 import numpy as np
 import tempfile
 from scipy.io import wavfile
-import matplotlib.pyplot as plt
 
 from audioset import vggish_embeddings
 from laugh_detector.microphone_stream import MicrophoneStream
@@ -12,7 +11,7 @@ from laugh_detector.microphone_stream import MicrophoneStream
 flags = tf.app.flags
 
 flags.DEFINE_string(
-    'keras_model', 'Models/LSTM_trained_on_audioset_40epoch.h5',
+    'keras_model', 'Models/LSTM_SingleLayer_100Epochs.h5',
     'Path to trained keras model that will be used to run inference.')
 
 flags.DEFINE_float(
@@ -37,8 +36,13 @@ flags.DEFINE_string(
 )
 
 flags.DEFINE_bool(
-    'hue_lights', True,
+    'hue_lights', False,
     'Map output to Hue bulbs'
+)
+
+flags.DEFINE_string(
+    'hue_IP', None,
+    'IP address for the Hue Bridge'
 )
 
 flags.DEFINE_integer(
@@ -46,10 +50,6 @@ flags.DEFINE_integer(
     'Size of window for running mean on output'
 )
 
-flags.DEFINE_bool(
-    'live_plot', True,
-    'plot data live'
-)
 FLAGS = flags.FLAGS
 
 RATE = 16000
@@ -77,16 +77,12 @@ if __name__ == '__main__':
     if FLAGS.hue_lights:
         from phue import Bridge
 
-        b = Bridge('10.3.2.71')
+        b = Bridge(FLAGS.hue_IP)
         lights = b.lights[:2]
 
         blue_xy = [0.1691, 0.0441]
         white_xy = [0.4051, 0.3906]
 
-    if FLAGS.live_plot:
-        import matplotlib
-        matplotlib.use('MacOSX')
-        plt.ion()
 
     window = [0.5]*FLAGS.avg_window
 
@@ -104,22 +100,18 @@ if __name__ == '__main__':
                 if FLAGS.hue_lights:
                     set_light(lights, 0.6, sum(window)/len(window))
 
-                if FLAGS.live_plot:
-                    plt.scatter(datetime.now(), sum(window)/len(window))
-                    plt.show()
-
                 if FLAGS.recording_directory:
                     f = tempfile.NamedTemporaryFile(delete=False, suffix='.wav', dir=FLAGS.recording_directory)
                     wavfile.write(f, RATE, arr)
 
                 if FLAGS.print_output:
-                    print(datetime.now().strftime('%H:%M:%S') + f' - Laugh Score: {p[0,0]:0.6f} - vol:{vol}')
+                    print(str(datetime.now()) + f' - Laugh Score: {p[0,0]:0.6f} - vol:{vol}')
 
                 if FLAGS.save_file:
                     if FLAGS.recording_directory:
-                        writer.write(datetime.now().strftime('%H:%M:%S') + f',{f.name},{p[0,0]},{vol}\n')
+                        writer.write(str(datetime.now()) + f',{f.name},{p[0,0]},{vol}\n')
                     else:
-                        writer.write(datetime.now().strftime('%H:%M:%S') + f',{p[0,0]},{vol}\n')
+                        writer.write(str(datetime.now()) + f',{p[0,0]},{vol}\n')
 
             except (KeyboardInterrupt, SystemExit):
                 print('Shutting Down -- closing file')

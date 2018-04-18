@@ -10,16 +10,22 @@ import pandas as pd
 threshold = 0.8
 laugh_quota = 100
 
-d2 = pd.read_csv('Data/DS_Discipline_meeting/recordings.csv', names=['time', 'file', 'score', 'vol'])
-d2['time'] = pd.to_datetime(d2['time'])
-d2 = d2.set_index('time')
+d2 = pd.read_csv('Data/test.csv', names=['time', 'score', 'vol'])
 
 d2['laugh'] = d2['score'] > threshold
 
-d2_window = d2[['score', 'vol']].rolling(window=20).sum()
-time_agg = d2.groupby(pd.TimeGrouper('10Min')).sum()
+d2['time'] = pd.to_datetime(d2['time'])
+start = pd.Timestamp('2018-02-28 11:14:38')
+ts = pd.date_range(start, periods=d2.shape[0], freq='3S')
+d2['ts'] = ts
+d2 = d2.set_index('ts')
+today = d2.loc[d2.index > '2018-03-07 00:00:00']
 
-total_laughs = d2['laugh'].sum()
+
+d2_window = today[['laugh', 'vol']].rolling(window=20).sum()
+time_agg = d2.groupby(pd.TimeGrouper('1D')).sum()
+
+total_laughs = today['laugh'].sum()
 remaining_laughs = laugh_quota - total_laughs
 
 donut_plot = dcc.Graph(
@@ -65,7 +71,7 @@ line_plot = dcc.Graph(
         id='line-plot',
         figure={
             'data': [
-                {'x': d2_window.index, 'y': d2_window['score'], 'type': 'scatter'},
+                {'x': d2_window.index, 'y': d2_window['laugh'], 'type': 'scatter'},
             ],
             'layout': {
                 'title': 'Laugh-o-Meter'
