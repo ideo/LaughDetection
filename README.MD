@@ -11,16 +11,9 @@ Running `live_inference.py` will use your computer's microphone to capture audio
 ### Setup
 
 First, install the python requirements:
-`pip install requirements.txt`
+`pip install -r requirements.txt`
 
-You will then need to download the following files from AudioSet to run the vggish model
-
-[vggish_model.ckpt](https://storage.googleapis.com/audioset/vggish_model.ckpt)
-
-
-[vggish_pca_params.npz](https://storage.googleapis.com/audioset/vggish_pca_params.npz)
-
-Copy them to the `audioset` directory
+You will then need to download [vggish_model.ckpt](https://storage.googleapis.com/audioset/vggish_model.ckpt) from AudioSet and move it to the `audioset` directory to run the vggish model.
 
 ### Running the Detector
 
