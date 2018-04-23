@@ -15,6 +15,10 @@ First, install the python requirements:
 
 You will then need to download [vggish_model.ckpt](https://storage.googleapis.com/audioset/vggish_model.ckpt) from AudioSet and move it to the `audioset` directory to run the vggish model.
 
+You will also need to install [Portaudio](http://www.portaudio.com/download.html) to run the live inference script. On macOS you can accomplish this with [homebrew](https://brew.sh/)
+
+`$ brew install portaudio`
+
 ### Running the Detector
 
 You can run the laugh detector using a pre-trained model from the command line
