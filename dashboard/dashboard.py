@@ -7,7 +7,7 @@ import plotly.graph_objs as go
 
 import pandas as pd
 
-threshold = 0.8
+threshold = 0.6
 laugh_quota = 100
 
 d2 = pd.read_csv('Data/test.csv', names=['time', 'score', 'vol'])

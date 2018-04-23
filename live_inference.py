@@ -83,7 +83,6 @@ if __name__ == '__main__':
         blue_xy = [0.1691, 0.0441]
         white_xy = [0.4051, 0.3906]
 
-
     window = [0.5]*FLAGS.avg_window
 
     with MicrophoneStream(RATE, CHUNK) as stream:
@@ -105,13 +104,13 @@ if __name__ == '__main__':
                     wavfile.write(f, RATE, arr)
 
                 if FLAGS.print_output:
-                    print(str(datetime.now()) + f' - Laugh Score: {p[0,0]:0.6f} - vol:{vol}')
+                    print(str(datetime.now()) + ' - Laugh Score: {0:0.6f} - vol:{1}'.format(p[0, 0], vol))
 
                 if FLAGS.save_file:
                     if FLAGS.recording_directory:
-                        writer.write(str(datetime.now()) + f',{f.name},{p[0,0]},{vol}\n')
+                        writer.write(str(datetime.now()) + ',{},{},{}\n'.format(f.name, p[0, 0], vol))
                     else:
-                        writer.write(str(datetime.now()) + f',{p[0,0]},{vol}\n')
+                        writer.write(str(datetime.now()) + ',{},{}\n'.format(p[0, 0], vol))
 
             except (KeyboardInterrupt, SystemExit):
                 print('Shutting Down -- closing file')

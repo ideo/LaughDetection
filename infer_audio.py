@@ -44,10 +44,10 @@ if __name__ == '__main__':
         max_len = np.max([e.shape[0] for e in embeddings])
         embeddings = np.array([np.append(e, np.zeros([(max_len - e.shape[0]), 128], np.float32), axis=0) for e in embeddings])
         scores = predict_laugh(embeddings)
-        for name, score in zip(files, scores[:,0]):
-            print(f'{name:>12}:  {score:0.6f}')
+        for name, score in zip(files, scores[:, 0]):
+            print('{:>12}:  {:0.6f}'.format(name, score))
 
     else:
         processed_embedding =  audio_embedder.convert_audio_to_embedding(FLAGS.wav_file)
         p = predict_laugh(np.expand_dims(processed_embedding, axis=0))
-        print(f'Laugh Score: {p}')
+        print('Laugh Score: {}'.format(p))
