@@ -45,6 +45,8 @@ This repo contains three pre-trained models in the Models directory. You can run
 
 This repo contains two processed subsets of the AudioSet data: a training set of 18,768 samples where half the data has a laughter label (including "Laughter", "Baby laughter", "Giggle", "Snicker", "Belly laugh", and "Chuckle, chortle") and the other half has a non-laughter human noise label (including "Speech", "Male speech, man speaking", "Female speech, woman speaking", "Child speech, kid speaking", "Conversation", "Narration, monologue", "Babbling", "Crowd", and "Hubbub, speech noise, speech babble"). Samples can have multiple labels, but a positive "laughter" label is only assigned if one of the laughter labels is present and a negative label affirms the absence of any laughter label. The evaluation set contains 568 samples from the evaluation data with the same distribution. These rebalanced datasets are in `Data/bal_laugh_speech_subset.tfrecord` and `Data/eval_laugh_speech_subset.tfrecord` respectively.
 
+The pre-trained models and re-balanced subset data are all licensed under a [Creative Commons Attribution 4.0 International License.](https://creativecommons.org/licenses/by/4.0/)
+
 If you want to create your own processed subset of the AudioSet data on a different collection of labels, you can follow the code in `Notebooks/AudiosetProcessing.ipynb`. You can create your own subsets of the Audioset data by creating a list of labels to use for the positive and negative cases.
 
 
