@@ -4,7 +4,6 @@ from datetime import datetime
 import numpy as np
 import tempfile
 from scipy.io import wavfile
-import matplotlib.pyplot as plt
 
 from audioset import vggish_embeddings
 from laugh_detector.microphone_stream import MicrophoneStream
@@ -46,10 +45,6 @@ flags.DEFINE_integer(
     'Size of window for running mean on output'
 )
 
-flags.DEFINE_bool(
-    'live_plot', True,
-    'plot data live'
-)
 FLAGS = flags.FLAGS
 
 RATE = 16000
@@ -57,8 +52,8 @@ CHUNK = int(RATE * FLAGS.sample_length)  # 3 sec chunks
 
 
 def set_light(lights, b_score, c_score):
-    for l in lights[:2]:
-        l.brightness = int(map_range(b_score, 0, 255))
+    for l in lights[1:]:
+        l.brightness = int(map_range(b_score, 50, 255))
         l.xy = list(map_range(c_score, np.array(blue_xy), np.array(white_xy)))
 
 
@@ -77,18 +72,13 @@ if __name__ == '__main__':
     if FLAGS.hue_lights:
         from phue import Bridge
 
-        b = Bridge('10.3.2.71')
+        b = Bridge('10.3.4.66')
         lights = b.lights[:2]
 
         blue_xy = [0.1691, 0.0441]
         white_xy = [0.4051, 0.3906]
 
-    if FLAGS.live_plot:
-        import matplotlib
-        matplotlib.use('MacOSX')
-        plt.ion()
-
-    window = [0.5]*FLAGS.avg_window
+    window = [True]*FLAGS.avg_window
 
     with MicrophoneStream(RATE, CHUNK) as stream:
         audio_generator = stream.generator()
@@ -99,27 +89,25 @@ if __name__ == '__main__':
                 embeddings = audio_embed.convert_waveform_to_embedding(arr, RATE)
                 p = model.predict(np.expand_dims(embeddings, axis=0))
                 window.pop(0)
-                window.append(p[0, 0])
+                window.append(p[0, 0]>0.8)
 
                 if FLAGS.hue_lights:
-                    set_light(lights, 0.6, sum(window)/len(window))
+                    print(sum(window)/len(window))
+                    set_light(lights, sum(window)/len(window), sum(window)/len(window))
 
-                if FLAGS.live_plot:
-                    plt.scatter(datetime.now(), sum(window)/len(window))
-                    plt.show()
 
                 if FLAGS.recording_directory:
                     f = tempfile.NamedTemporaryFile(delete=False, suffix='.wav', dir=FLAGS.recording_directory)
                     wavfile.write(f, RATE, arr)
 
                 if FLAGS.print_output:
-                    print(datetime.now().strftime('%H:%M:%S') + f' - Laugh Score: {p[0,0]:0.6f} - vol:{vol}')
+                    print(datetime.now().strftime('%c') + f' - Laugh Score: {p[0,0]:0.6f} - vol:{vol}')
 
                 if FLAGS.save_file:
                     if FLAGS.recording_directory:
-                        writer.write(datetime.now().strftime('%H:%M:%S') + f',{f.name},{p[0,0]},{vol}\n')
+                        writer.write(datetime.now().strftime('%c') + f',{f.name},{p[0,0]},{vol}\n')
                     else:
-                        writer.write(datetime.now().strftime('%H:%M:%S') + f',{p[0,0]},{vol}\n')
+                        writer.write(datetime.now().strftime('%c') + f',{p[0,0]},{vol}\n')
 
             except (KeyboardInterrupt, SystemExit):
                 print('Shutting Down -- closing file')

@@ -10,7 +10,7 @@ import pandas as pd
 threshold = 0.8
 laugh_quota = 100
 
-d2 = pd.read_csv('Data/DS_Discipline_meeting/recordings.csv', names=['time', 'file', 'score', 'vol'])
+d2 = pd.read_csv('Data/wrigleyville_test_3_28.csv', names=['time', 'score', 'vol'])
 d2['time'] = pd.to_datetime(d2['time'])
 d2 = d2.set_index('time')
 
